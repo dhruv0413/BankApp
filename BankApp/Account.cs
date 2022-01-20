@@ -43,20 +43,23 @@ namespace BankApp
         public int Debit(int Amt)
         {
             int temp = Balance;
+            int maxdebitpertrans=50000;
+            int ELegableForTax = 30000;
+            int Tax = 30;
 
             if(!CheckCapablity()) { return 0; }
             if (!CheckCap(Amt)) { return 0; }
 
 
-            if (Amt >50000)
+            if (Amt >maxdebitpertrans)
             {
-                Console.WriteLine("You can not Withdraw more than 50K in a single transaction.");
+                Console.WriteLine($"You can not Withdraw more than {maxdebitpertrans} in a single transaction.");
                 return 0;
             }
-            else if (Amt > 30000)
+            else if (Amt > ELegableForTax)
             {
-                Console.WriteLine("Amount is Greater Than 30K. So 30Rs Service-Charge will be deducted.");
-                Amt += 30;
+                Console.WriteLine($"Amount is Greater Than {ELegableForTax}. So {Tax}Rs Service-Charge will be deducted.");
+                Amt += Tax;
             }
 
             try
@@ -89,14 +92,17 @@ namespace BankApp
         public bool CheckCapablity()
         {
             //C-1
-            if (Statement.Count >= 4)
+            int maxtransperhour = 4;
+
+
+            if (Statement.Count >= maxtransperhour)
             {
                 TimeSpan One = new TimeSpan(0, 1, 0, 0);
-                TimeSpan Check = DateTime.Now - Statement[Statement.Count - 4].d;
+                TimeSpan Check = DateTime.Now - Statement[Statement.Count - maxtransperhour].d;
 
                 if (One > Check)
                 {
-                    Console.WriteLine("Can Not Perform More Than 4 Transactions in an Hour");
+                    Console.WriteLine($"Can Not Perform More Than {maxtransperhour} Transactions in an Hour");
                     return false;
                 }
             }
@@ -107,6 +113,7 @@ namespace BankApp
         {
             //C-2
             int LastHour = amt;
+            int maxdebitperhour = 200000;
 
             for (int i = Statement.Count - 1; i >= 0; i--)
             {
@@ -122,9 +129,9 @@ namespace BankApp
                 {
                     LastHour += Statement[i].Amt;
                 }
-                if (LastHour > 200000)
+                if (LastHour > maxdebitperhour)
                 {
-                    Console.WriteLine("You have reached Maximum Withdrawal limit per hour (200K). Transaction can't be performed.");
+                    Console.WriteLine($"You have reached Maximum Withdrawal limit per hour ({maxdebitperhour}). Transaction can't be performed.");
                     return false;
                 }
             }
